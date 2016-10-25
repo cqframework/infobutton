@@ -1,5 +1,5 @@
 {
-	"tool": "jekyll",
+  "tool": "jekyll",
   "paths": {
     "resources": "resources",
     "pages": "pages",
@@ -9,19 +9,20 @@
     "txCache": "txCache",
     "specification": "http://hl7.org/fhir/2016Sep/"
   },
-  	"defaults": {
-		"Any": {
-			"template-format": "instance-template-format.html",
-			"template-base": "instance-template-base.html"
-		},
-		"StructureDefinition" : {
-				"template-base": "instance-template-sd.html"
-		}
-	},
-	"canonicalBase": "http://hl7.org/fhir/igtemplate",
-	"source": "igtemplate.xml",
-	"resources": {
-		"Library/library-example": { "source": "library-example" },
-		"PlanDefinition/plandefinition-example": { "source": "plandefinition-example" }
-	}
+  "defaults": {
+    "Any": {
+      "template-format": "instance-template-format.html",
+      "template-base": "instance-template-base.html"
+    },
+    "StructureDefinition": {
+      "template-base": "instance-template-sd.html"
+    }
+  },
+  "sct-edition": "http://snomed.info/sct/731000124108",
+  "canonicalBase": "http://hl7.org/fhir/igtemplate",
+  "source": "igtemplate.xml",
+  "resources": {
+    "Library/library-example": { "source": "library-example" },
+    "PlanDefinition/plandefinition-example": { "source": "plandefinition-example" }
+  }
 }
