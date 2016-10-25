@@ -1,0 +1,26 @@
+{
+	"tool": "jekyll",
+	"paths": {
+		"resources": "resources",
+		"pages": "pages",
+		"temp": "temp",
+		"output": "output",
+		"qa": "qa",
+		"specification": "http://hl7.org/fhir/2016Sep/"
+	},
+  	"defaults": {
+		"Any": {
+			"template-format": "instance-template-format.html",
+			"template-base": "instance-template-base.html"
+		},
+		"StructureDefinition" : {
+				"template-base": "instance-template-sd.html"
+		}
+	},
+	"canonicalBase": "http://hl7.org/fhir/igtemplate",
+	"source": "igtemplate.xml",
+	"resources": {
+		"Library/library-example": { "source": "library-example" },
+		"PlanDefinition/plandefinition-example": { "source": "plandefinition-example" }
+	}
+}
