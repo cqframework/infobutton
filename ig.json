@@ -1,13 +1,14 @@
 {
 	"tool": "jekyll",
-	"paths": {
-		"resources": "resources",
-		"pages": "pages",
-		"temp": "temp",
-		"output": "output",
-		"qa": "qa",
-		"specification": "http://hl7.org/fhir/2016Sep/"
-	},
+  "paths": {
+    "resources": "resources",
+    "pages": "pages",
+    "temp": "temp",
+    "output": "output",
+    "qa": "qa",
+    "txCache": "txCache",
+    "specification": "http://hl7.org/fhir/2016Sep/"
+  },
   	"defaults": {
 		"Any": {
 			"template-format": "instance-template-format.html",
