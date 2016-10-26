@@ -6,7 +6,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
   <meta charset="UTF-8"/>
-  <title>FHIR Implementation Guide Template - FHIR v1.6.0</title>
+  <title>Context-aware knowledge retrieval (Infobutton)</title>
 
   {% include header.html %}
 
@@ -18,7 +18,7 @@
   <div class="container">  <!-- container -->
    <ul class="breadcrumb">
           <!-- daf\daf / page / daf -->
-        <li title="IG Template"><b>FHIR Implementation Guide Template</b></li>
+        <li title="IG Template"><b>Context-aware knowledge retrieval (Infobutton)</b></li>
 
    </ul>
   </div>  <!-- /container -->
@@ -31,17 +31,17 @@
 
 <div class="col-9">
   <a name="IG Template"></a>
-  <h2>FHIR Implementation Guide Template</h2>
+  <h2>FHIR-based context-aware knowledge retrieval (Infobutton on FHIR) Implementation Guide</h2>
 
   <a name="introduction"></a>
   <h3>Introduction</h3>
 
-  <p>Lorem ipsum dolor...</p>
-
+  <p>The current Infobutton Standard consists of an HL7 Version 3 normative specification and two implementation guides for URL-based and RESTful implementations. The three specifications are required for Meaningful Use EHR certification and have been widely adopted. Given industry movement towards FHIR and the potential to achieve more advanced functionality (e.g., ability for online resources to query additional data from EHRs), there is a growing desire among potential implementers and stakeholders to enable a FHIR-based Infobutton specification. </p>
+    
   <a name="scope"></a>
   <h3>Scope</h3>
 
-  <p>Lorem ipsum dolor...</p>
+  <p>This IG consists of a FHIR-based specification for “Context-Aware Knowledge Retrieval (Infobutton)”. The specification leverages the resources of the Clinical Reasoning module, in particular the DecisionSupportServiceModule, and the GuidanceResponse resources, which are under development by the CDS, CQI, and FHIR Work Groups. This IG includes FHIR profiles that apply constraints over the DecisionSupportServiceModule and GuidanceResponse resources; and specific guidance on using the $evaluate operation to perform an InfoButton request/response</p>
 
   <a name="content-index"></a>
   <h3>Content Index</h3>
