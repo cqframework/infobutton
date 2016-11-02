@@ -33,8 +33,8 @@
   <a name="IG Template"></a>
   <h2>FHIR-based context-aware knowledge retrieval (Infobutton on FHIR) Implementation Guide</h2>
 
-  <a name="introduction"></a>
-  <h3>Introduction</h3>
+  <a name="preface"></a>
+  <h3>Preface</h3>
 
   <p>The current Infobutton Standard consists of an HL7 Version 3 normative specification and two implementation guides for URL-based and RESTful implementations. The three specifications are required for Meaningful Use EHR certification and have been widely adopted. Given industry movement towards FHIR and the potential to achieve more advanced functionality (e.g., ability for online resources to query additional data from EHRs), there is a growing desire among potential implementers and stakeholders to enable a FHIR-based Infobutton specification. </p>
     
@@ -43,6 +43,136 @@
 
   <p>This IG consists of a FHIR-based specification for “Context-Aware Knowledge Retrieval (Infobutton)”. The specification leverages the resources of the Clinical Reasoning module, in particular the DecisionSupportServiceModule, and the GuidanceResponse resources, which are under development by the CDS, CQI, and FHIR Work Groups. This IG includes FHIR profiles that apply constraints over the DecisionSupportServiceModule and GuidanceResponse resources; and specific guidance on using the $evaluate operation to perform an InfoButton request/response</p>
 
+  <a name="introduction"></a>
+  <h3>Introduction</h3>
+
+  <p>Clinicians face numerous knowledge needs during the course of patient care. To a large extent, these knowledge needs are related to gaps in medical knowledge that clinicians need to fill in order to make, confirm, or carry out a patient care decision. Ultimately, knowledge gaps lead to suboptimal decisions, compromising the quality of care.</p>
+
+    <p>With the advent of the World Wide Web, numerous online health knowledge resources have become available. Although these resources have demonstrated great potential to resolve clinicians' and their patients' knowledge needs, a number of barriers hinder a more efficient and effective use of these resources, slowing their dissemination. In essence, both patients and providers become overwhelmed with the vast amount of information available, raising the need for tools that help them identify relevant, context-specific, high quality knowledge in a timely manner.</p>
+
+    <p>To lower barriers to the access of knowledge resources at the point of need, researchers have proposed context-aware integration of knowledge resources into electronic health record (EHR) and personal health record (PHR) systems. Tools that provide this type of integration have been generically denominated infobuttons. The goal of the present specification is to facilitate the context-aware integration of knowledge resources into EHR and PHR systems. </p>
+
+  <a name="technical_background"></a>
+  <h3>Technical Overview</h3>
+    <p>In a typical infobutton implementation, EHR/PHR systems place hyperlinks adjacent to clinical concepts, such as medications, laboratory tests, and problems. These hyperlinks embed a knowledge request with a set of attributes that capture the context of the interaction between the user and the EHR. Context can be expressed in terms of attributes that characterize (1) the clinical concept of interest (e.g., a medication, a laboratory test result, a problem list entry); (2) the patient demographics and other observations; (3) the EHR task (e.g., order entry, laboratory results review, problem list review); (4) the knowledge user (e.g., discipline, specialty, language, patient vs. provider); and (5) the care setting (e.g., outpatient, inpatient). When a user clicks on an infobutton, the following steps are followed: 1) a request for knowledge is sent to a decision support system known as infobutton manager; 2) Using these context attributes, the infobutton manager produces a refined knowledge request, for example, asking for specific content topics that are thought to be most relevant in the particular context (e.g., diagnosis, treatment). The refined knowledge request is submitted to one or more relevant knowledge resources; 3) the knowledge resources responds with knowledge content that fulfills the knowledge request; 4) the infobutton manager processes the content from the multiple resources and sends it to the EHR.</p>
+    
+    <p>Infobutton managers are one of many possible implementation mechanisms for context-aware knowledge integration. In other alternative implementations, infobuttons submit requests for knowledge directly to a knowledge resource without the mediation of an infobutton manager. In addition, knowledge can be integrated into EHR systems through mechanisms other than infobutton hyperlinks. This standard specification is agnostic of any particular implementation and is designed to support a variety of context-aware knowledge integration approaches.</p>
+    
+  <a name="general_requirements"></a>
+  <h3>General Conformance Criteria</h3>
+    
+<p>To claim compliant with this standard, implementers are not required to handle all the data elements defined in the knowledge request. The following conformance criteria SHOULD be considered:</p>
+
+    <ol>
+        <li>An EHR SHOULD formulate knowledge requests as completely as possible, using as many context data elements as possible, preferably using coded data.</li>
+        <li>Except for required resources and attributes, knowledge resources MAY process only the elements that they can handle, ignoring other elements. For example, if a knowledge resource does not use <i>patient.administrativeGender</i> as a content index, the resource MAY ignore this attribute whenever it is included in a knowledge request.</li>
+    </ol>
+    <p>These directives allow EHR systems to create knowledge requests that can be fulfilled by knowledge resources with different levels of sophistication. The approach also enables less sophisticated knowledge resources to quickly achieve compliance without major modifications to their content and indexing structure. Still, resources can be gradually enhanced aiming at fully exercising the resources described in this specification.</p>
+
+    <a name="resources"/>
+
+<h3>Resources</h3>
+    
+<p>KnowledgeRequestNotification.id: Represents the globally unique instance identifier of a knowledge request.</p>
+<p>KnowledgeRequestNotification.effectiveTime: creation time of the knowledge request.</p>
+
+<h4>MainSearchCriteria</h4>
+<p>Represents the main subject of interest in a knowledge request (e.g., a medication, a lab test result, a disease in the patient's problem list). When multiple instances of this class are present, knowledge resources SHOULD join the multiple instances using the AND Boolean operator. 
+</p>
+<p>In most knowledge request uses cases, at least one instance of mainSearchCriteria SHOULD be present. However, there are several use cases where a specific main concept of interest may not be determined. In these cases, the sender MAY omit the mainSearchCriteria. One example of such as use case is an EHR link to a resource search function that just passes context information such as patient age and gender, but without providing any specific concept of interest. This link would allow users to search by themselves using the resource's search engine, but automatically setting the contextual information as search filters. Another example is an application that sends the patient's medications and problems as Observation instances and a resource responds with evidence updates on any combination of the patient's medications and problems.
+</p>
+
+<p>MainSearchCriteria.code: indicates that the type of this Observation class is KnowledgeSubjectObservationType (i.e., KnowledgeSubjectObservationType.code="KSUBJ").
+</p>
+    <p>MainSearchCriteria.value: the primary knowledge subject of interest (e.g., a medication, a laboratory test, a condition).
+CD data type restrictions for mainSearchCriteria.value: 1) If code is present, displayName MAY also be present, so that knowledge resources that do not support a given code system MAY still process the request using displayName as a search keyword. 2) If code is present, codeSystem SHALL be present. 3) If the code, the displayName, and originalText are all present, knowledge resources MAY decide whether to process the code, the displayName, and/or the originalText to retrieve relevant content. 4) If code is not present, the text displayed to (or entered by) the user SHALL be represented in the originalText attribute.</p>
+
+<p>SeverityObservation: specifies the interpretation of a laboratory test result (e.g., 'high', 'low', 'abnormal', 'normal'). This class MAY be used to support implementations where the MainSearchCriteria consists of a laboratory test result. Supports questions such as "what are the causes of high serum potassium?"</p>
+
+<p>SeverityObservation.code: a code that defines that the type of the observation is SeverityObservation (i.e., SeverityObservation.code="SEV").</p>
+<p>ObservationInterpretation.code: a code that represents the value of the observation interpretation (e.g., high, low, normal).
+SubTopic: narrows down the knowledge request by specifying a subdomain of interest (e.g., indications, contra-indications, dose) related to the MainSearchCriteria knowledge subject. In Infobutton implementations, the SubTopic may be selected by the user from an Infobutton page that presents a list of content areas that are relevant in a specific context (e.g., "contra-indications of digoxin", "adverse effects of digoxin").</p>
+
+    <h4>EHR Task</h4>
+<p>TaskContext.code: a code that represents the task that is being performed in an EHR/PHR system.</p>
+
+<h4>Patient</h4>
+<p>PatientPerson.administrativeGenderCode: gender of the patient represented in the knowledge request.</p>
+
+<p>Age: age of the patient as a numeric value.</p>
+
+<p>Age.code: a code that indicates that the type of this observation is AgeObservationType.</p>
+<p>Age.value: the patient's age as a numeric quantity. Units SHOULD be expressed in one of the following units (per the Unified Code for Units of Measure): years (a), months (mo), weeks (wk), days (d), or hours (h).</p>
+<p>AgeGroup: an observation that represents the patient's age in terms of a predefined coded age range (e.g., infant, neonate).</p>
+<p>AgeGroup.code: a code that indicates that the type of this observation is AgeGroupObservationType.</p>
+<p>AgeGroup.value: a code that represents the patient's age group.</p>
+
+<p>Observation: additional information (e.g., kidney function, height, weight, pregnancy status) about the patient context that may be used to refine the content retrieved by online knowledge resources. For example, a physician prescribing atenolol to a patient with impaired renal function may want to know how to appropriately adjust the dose of this drug given the patient's condition. Although this class is very flexible and captures several kinds of observations, the use of this class will be driven by use cases and specific constraints defined in an implementation guide. This class SHALL NOT be used to represent the patient's age or age group. Implementers SHALL use the Age and/or AgeGroup classes for this purpose.
+</p>
+    
+<p>Observation.code: A code that defines the type of observation documented about the patient (e.g., LOINC 29463-7 for the patient's weight, HL7 code ASSERTION for problems, signs, and symptoms).
+Observation.value: A code or quantity that represents the actual information observed (e.g., 70 mL/min).
+Observation.InterpretationCode: One or more codes specifying a rough qualitative interpretation of the observation, such as "normal", "abnormal", "high", "low", etc.</p>
+
+    
+    
+    <h4>Encounter</h4>
+<p>Encounter: the type of patient encounter (e.g., inpatient, outpatient) in which the knowledge request takes place.</p>
+<p>Encounter.code: a code that represents the type of encounter (e.g., inpatient, outpatient).</p>
+
+    <h4>Subtopic</h4>
+<p>SubTopic.code: defines that the type of this Observation class is KnowledgeSubtopicObservationType (i.e., KnowledgeSubtopicObersvationType.code="KSUBT")</p>
+<p>SubTopic.value: a code that represents a knowledge subtopic of interest (e.g., diagnosis, treatment, adverse effects).
+TaskContext: the task that the user is performing in the EHR/PHR when a knowledge request is initiated (e.g., order entry, laboratory results review, problem list review, medications list review).</p>
+
+<h4>Location of interest</h4>
+    <p>Address of a physical location that may be relevant for the context. For example, a knowledge request may include the postal code of locations recently visited by the patient so that a knowledge resource may retrieve a list of current disease outbreaks in these locations. NOTE: LocationOfInterest SHALL NOT be used to specify the complete address of a patient.</p>
+
+<p>LocationOfInterest.addr: The address itself. For most use cases, the location's postal code is sufficient.</p>
+
+<h4>Service delivery location</h4>
+    <p>Healthcare facility where the patient's care takes place at the time the knowledge request is initiated. MAY be used by the request filler to identify potential local knowledge resources (e.g., local protocols) that are specific to the facility where the patient care is being delivered.</p>
+
+<p>DeliveryLocation.id: identifier of the facility where the patient care takes place.</p>
+
+<h4>Requestor</h4>
+    <p>AssignedEntity: entity (e.g., institution) that initiated the request. May be used by a knowledge request recipient to determine the knowledge resources that the requesting entity has access to (e.g., based on subscriptions). In addition, MAY be used to allow the identification of an individual within the institution, so that personal preferences can be considered by a knowledge request filler when processing the request.</p>
+
+<p>AssignedEntity.name: username used by the entity (typically as part of an institutional subscription to a knowledge resource)</p>
+<p>AssignedEntity.certificateText: password associated with the username of the entity</p>
+<p>Organization: the entity within which the request is initiated.</p>
+
+<p>Organization.id: identifier of the organization within which the request was initiated</p>
+<p>AuthorizedPerson: the individual who initiated the knowledge request</p>
+<p>AuthorizedPerson.id: username of the person who initiated the request. MAY be used by a knowledge request filler to apply personal preferences during the user's session.</p>
+<p>PatientContext: information about the patient that MAY be used by the EHR in a knowledge request to further specify the context in which a knowledge need arises.</p>
+
+<h4>Performer</h4>
+<p>Defines the type of participants that act as the Performer (user who interacts with the system) and InformationRecipient (person who will consume the content). The performer and informationRecipient can be instantiated as a Patient, HealthCareProvider, or Payor.</p>
+
+<p>The following are examples for the use of PerformerChoice: 1) when a care provider interacts with the system seeking knowledge to fulfill his/her own needs, both the performer and informationRecipient SHALL be a HealthCareProvider; 2) when a care provider initiates the knowledge request, but looking for educational information to be given to the patient, the performer SHALL be a HealthCareProvider and the informationRecipient SHALL be a Patient; and 3) when a patient is looking for information to fulfill her own needs, both the performer and the informationRecipient SHALL be a Patient.</p>
+
+<p>It is expected that knowledge resources will develop their own business rules to process the information conveyed in PerformerChoice. For example, if the performer is specified, but the informationRecipient is not, the knowledge request filler MAY assume the informationRecipient to be the performer. On the other hand, a knowledge resource that provides patient education content MAY assume that the informationRecipient is always the patient.</p>
+
+    
+<h4>Language</h4>
+    
+<p>LanguageCommunication: language of the performer or informationRecipient. In implementations, language of the performer MAY be used by to determine the language of the individual who initiated a knowledge request, while language of the informationRecipient MAY be used to determine the language of the individual who will consume the content. For example, when a clinician looks for patient education information, the clinician's language may be English, while the patient is a Spanish speaker. In this case, while the user interface for the clinician can be presented in English, the requested patient education content will be presented in Spanish.</p>
+
+<p>LanguageCommunication of the performer also denotes the language of the displayName and originalText attributes of the CD data type instances in a knowledge request.</p>
+
+<p>LanguageCommunication.code: A code that represents the person's language (e.g., English, Spanish).</p>
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
   <a name="content-index"></a>
   <h3>Content Index</h3>
   
