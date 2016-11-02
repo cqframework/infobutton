@@ -57,8 +57,12 @@
     <p>In a typical infobutton implementation, EHR/PHR systems place hyperlinks adjacent to clinical concepts, such as medications, laboratory tests, and problems. These hyperlinks embed a knowledge request with a set of attributes that capture the context of the interaction between the user and the EHR. Context can be expressed in terms of attributes that characterize (1) the clinical concept of interest (e.g., a medication, a laboratory test result, a problem list entry); (2) the patient demographics and other observations; (3) the EHR task (e.g., order entry, laboratory results review, problem list review); (4) the knowledge user (e.g., discipline, specialty, language, patient vs. provider); and (5) the care setting (e.g., outpatient, inpatient). When a user clicks on an infobutton, the following steps are followed: 1) a request for knowledge is sent to a decision support system known as infobutton manager; 2) Using these context attributes, the infobutton manager produces a refined knowledge request, for example, asking for specific content topics that are thought to be most relevant in the particular context (e.g., diagnosis, treatment). The refined knowledge request is submitted to one or more relevant knowledge resources; 3) the knowledge resources responds with knowledge content that fulfills the knowledge request; 4) the infobutton manager processes the content from the multiple resources and sends it to the EHR.</p>
     
     <p>Infobutton managers are one of many possible implementation mechanisms for context-aware knowledge integration. In other alternative implementations, infobuttons submit requests for knowledge directly to a knowledge resource without the mediation of an infobutton manager. In addition, knowledge can be integrated into EHR systems through mechanisms other than infobutton hyperlinks. This standard specification is agnostic of any particular implementation and is designed to support a variety of context-aware knowledge integration approaches.</p>
+
+    <a name="general_conformance_criteria"></a>
+  <h3>Infobutton interaction using the Clinical Reasoning Module</h3>
+<p>TBD: Clinical Reasoning module, DecisionSupportServiceModule, and GuidanceResponse resources</p>
     
-  <a name="general_requirements"></a>
+  <a name="general_conformance_criteria"></a>
   <h3>General Conformance Criteria</h3>
     
 <p>To claim compliance with this standard, implementers are not required to handle all the data elements defined in the knowledge request. The following conformance criteria SHOULD be considered:</p>
